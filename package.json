@@ -1,0 +1,23 @@
+{
+  "name": "npm-link-all-things",
+  "version": "0.0.0",
+  "description": "have a bunch of node modules in a directory that reference each other?  just link them all to each other and always run the latest code.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:npm-link-all-the-things.git"
+  },
+  "keywords": [
+    "npm",
+    "utility",
+    "development"
+  ],
+  "author": "mike chevett",
+  "license": "mit",
+  "dependencies": {
+    "jsontool": "^7.0.1"
+  }
+}
