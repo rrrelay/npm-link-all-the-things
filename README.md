@@ -6,7 +6,7 @@ find all node modules in a directory and then link them all together so that you
 
 like
 ```bash
-cd npm-all-the-things
+cd npm-link-all-the-things
 npm install
 ./link.sh ~/your-awesome-dir
 ```
