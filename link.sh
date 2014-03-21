@@ -3,7 +3,6 @@
 ##### WOMM!!! osx and bunch of stuff installed
 ##### crazy slow and horrible.... but still faster than doing it by hand
 
-oldDir="$PWD";
 
 function getDependencyNames(){
 	cat $1 | "$j" dependencies | gsed  -n '/\w/p;' | gsed  's/[":]//g' | awk '{print $1;}'
@@ -23,7 +22,9 @@ function runOnNodePackages(){
 	done < <(echo "$1");
 }
 
-j="$PWD/node_modules/.bin/json"
+oldDir="$PWD";
+scriptLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+j="$scriptLocation/node_modules/.bin/json"
 all_module_locations="$(find $1 -iname 'package\.json' | gsed '/node_modules/d')"
 all_module_names=$(runOnNodePackages "$all_module_locations" 'echo $(cat package.json | "$j" name);');
 all_module_names=$(echo "$all_module_names" | sort | uniq)
@@ -41,35 +42,42 @@ done < <(echo "$all_module_locations")
 
 module_names_to_link=$(echo "$module_names_to_link" | sort | uniq );
 
+echo "Found $(echo "$module_names_to_link" | wc -l |sed -e 's/[ \t]//g') modules that should be link.";
+echo "$module_names_to_link";
+
+read;
 # linking is a two step process
 # step 1
 while read m; do
 	name="$(cat "$m" | "$j" name)";
 	if echo "$module_names_to_link" | ack "^$name$" > /dev/null; then
-		modules_to_link="$modules_to_link"$'\n'"$m"
+		ooldDir="$PWD";
+		currDir="${m%package.json}"
+		echo "linking in $currDir";
+		cd "$currDir";
+		sudo npm link > /dev/null;
+		cd "$ooldDir";
+
 	fi
 done < <(echo "$all_module_locations")
 
 
-echo "$modules_to_link";
-runOnNodePackages "$modules_to_link" "sudo npm link";
 
 # step 2
 
 results='';
 while read m; do
-	dir="${m%package.json}"
-	cd "$dir"
+	lll="${m%package.json}"
+	cd "$lll"
 
 	while read dep; do
 		if echo "$module_names_to_link" | ack "^$dep$" > /dev/null; then
-			npm link "$dep";
-			results="$results $dir: $dep"$'\n';
+			npm link "$dep" > /dev/null;
+			results="$results $lll: $dep"$'\n';
 		fi
-	done < <(getDependencyNames $m)
+	done < <(getDependencyNames "package.json")
 	cd "$oldDir"
 done < <(echo "$all_module_locations")
 
 echo "--------------------";
 echo "$results";
-echo "done.";
