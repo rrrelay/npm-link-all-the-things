@@ -34,7 +34,7 @@ module_names_to_link=
 
 while read m; do
 	while read dep; do
-		if echo "$all_module_names" | ack "^$dep$" > /dev/null; then
+		if echo "$all_module_names" | grep "^$dep$" > /dev/null; then
 			module_names_to_link="$module_names_to_link$dep"$'\n';
 		fi
 	done < <(getDependencyNames $m)
@@ -50,7 +50,7 @@ read;
 # step 1
 while read m; do
 	name="$(cat "$m" | "$j" name)";
-	if echo "$module_names_to_link" | ack "^$name$" > /dev/null; then
+	if echo "$module_names_to_link" | grep "^$name$" > /dev/null; then
 		ooldDir="$PWD";
 		currDir="${m%package.json}"
 		echo "linking in $currDir";
@@ -71,7 +71,7 @@ while read m; do
 	cd "$lll"
 
 	while read dep; do
-		if echo "$module_names_to_link" | ack "^$dep$" > /dev/null; then
+		if echo "$module_names_to_link" | grep "^$dep$" > /dev/null; then
 			npm link "$dep" > /dev/null;
 			results="$results $lll: $dep"$'\n';
 		fi
