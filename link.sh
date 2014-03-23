@@ -70,8 +70,10 @@ while read m; do
 	lll="${m%package.json}"
 	cd "$lll"
 
+	echo "cd $lll";
 	while read dep; do
 		if echo "$module_names_to_link" | grep "^$dep$" > /dev/null; then
+			echo "npm link $dep";
 			npm link "$dep" > /dev/null;
 			results="$results $lll: $dep"$'\n';
 		fi
